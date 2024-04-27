@@ -131,6 +131,7 @@ bool MyFirstJUCEPluginAudioProcessor::isBusesLayoutSupported (const BusesLayout&
 
 void MyFirstJUCEPluginAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
 {
+
     juce::ScopedNoDenormals noDenormals;
     auto totalNumInputChannels  = getTotalNumInputChannels();
     auto totalNumOutputChannels = getTotalNumOutputChannels();
@@ -155,6 +156,13 @@ void MyFirstJUCEPluginAudioProcessor::processBlock (juce::AudioBuffer<float>& bu
         auto* channelData = buffer.getWritePointer (channel);
 
         // ..do something to the data...
+        int numSamples = buffer.getNumSamples();
+
+        for (int sampleIndex = 0; sampleIndex < numSamples; ++sampleIndex) {
+            float sample = buffer.getSample(channel, sampleIndex);
+            sample = sample * noteOnVel;
+            buffer.setSample(channel, sampleIndex, sample);
+        }
     }
 }
 
