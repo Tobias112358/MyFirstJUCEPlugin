@@ -161,9 +161,16 @@ void MyFirstJUCEPluginAudioProcessor::processBlock (juce::AudioBuffer<float>& bu
         for (int sampleIndex = 0; sampleIndex < numSamples; ++sampleIndex) {
             float sample = buffer.getSample(channel, sampleIndex);
             sample = sample * noteOnVel;
-            buffer.setSample(channel, sampleIndex, sample);
+            if (bitcrusherRate > 1)
+            {
+                if (sampleIndex % bitcrusherRate != 0) channelData[sampleIndex] = channelData[sampleIndex - sampleIndex % bitcrusherRate];
+            }
+            channelData[sampleIndex] = channelData[sampleIndex] * noteOnVel;
+
+            pushNextSampleIntoFifo(channelData[sampleIndex]);
         }
     }
+
 }
 
 //==============================================================================
@@ -189,6 +196,30 @@ void MyFirstJUCEPluginAudioProcessor::setStateInformation (const void* data, int
 {
     // You should use this method to restore your parameters from this memory block,
     // whose contents will have been created by the getStateInformation() call.
+}
+
+void MyFirstJUCEPluginAudioProcessor::getNextAudioBlock(const juce::AudioSourceChannelInfo& bufferToFill)
+{
+
+}
+
+void MyFirstJUCEPluginAudioProcessor::pushNextSampleIntoFifo(float sample) noexcept
+{
+    // if the fifo contains enough data, set a flag to say
+    // that the next line should now be rendered..
+    if (fifoIndex == fftSize)       // [8]
+    {
+        if (!nextFFTBlockReady)    // [9]
+        {
+            std::fill(fftData.begin(), fftData.end(), 0.0f);
+            std::copy(fifo.begin(), fifo.end(), fftData.begin());
+            nextFFTBlockReady = true;
+        }
+
+        fifoIndex = 0;
+    }
+
+    fifo[(size_t)fifoIndex++] = sample; // [9]
 }
 
 //==============================================================================

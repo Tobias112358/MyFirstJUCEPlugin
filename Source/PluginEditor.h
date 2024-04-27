@@ -15,7 +15,8 @@
 /**
 */
 class MyFirstJUCEPluginAudioProcessorEditor  : public juce::AudioProcessorEditor,
-                                               private juce::Slider::Listener
+                                               private juce::Slider::Listener,
+                                               private juce::Timer
 {
 public:
     MyFirstJUCEPluginAudioProcessorEditor (MyFirstJUCEPluginAudioProcessor&);
@@ -24,8 +25,16 @@ public:
     //==============================================================================
     void paint (juce::Graphics&) override;
     void resized() override;
+    void drawNextLineOfSpectrogram();
+    void timerCallback() override;
+
+
 
 private:
+    juce::dsp::FFT forwardFFT;                          // [3]
+    juce::Image spectrogramImage;
+
+
     void sliderValueChanged(juce::Slider* slider) override;
 
     // This reference is provided as a quick way for your editor to
@@ -33,6 +42,7 @@ private:
     MyFirstJUCEPluginAudioProcessor& audioProcessor;
 
     juce::Slider midiVolume;
+    juce::Slider bitcrusher;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MyFirstJUCEPluginAudioProcessorEditor)
 };

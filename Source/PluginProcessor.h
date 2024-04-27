@@ -55,9 +55,21 @@ public:
 
     //==============================================================================
     float noteOnVel;
+    int bitcrusherRate;
+
+    void getNextAudioBlock(const juce::AudioSourceChannelInfo&);
+    void pushNextSampleIntoFifo(float) noexcept;
+
+    static constexpr auto fftOrder = 10;                // [1]
+    static constexpr auto fftSize = 1 << fftOrder;     // [2]
+    bool nextFFTBlockReady = false;                     // [7]
+    std::array<float, fftSize> fifo;                    // [4]
+    std::array<float, fftSize * 2> fftData;             // [5]
 
 
 private:
+
+    int fifoIndex = 0;                                  // [6]
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MyFirstJUCEPluginAudioProcessor)
 };
