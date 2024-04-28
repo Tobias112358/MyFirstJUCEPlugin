@@ -14,9 +14,8 @@ juce::Image spectrogramImage;
 
 //==============================================================================
 MyFirstJUCEPluginAudioProcessorEditor::MyFirstJUCEPluginAudioProcessorEditor (MyFirstJUCEPluginAudioProcessor& p)
-    : forwardFFT(MyFirstJUCEPluginAudioProcessor::fftOrder), AudioProcessorEditor (&p), audioProcessor (p), spectrogramImage(juce::Image::RGB, 512, 512, true)
+    : forwardFFT(MyFirstJUCEPluginAudioProcessor::fftOrder), AudioProcessorEditor (&p), audioProcessor (p), spectrogramImage(juce::Image::RGB, 400, 150, true)
 {
-
 
     // Make sure that before the constructor has finished, you've set the
     // editor's size to whatever you need it to be.        
